@@ -1,4 +1,4 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { APIGatewayEvent, Handler } from 'aws-lambda';
 import {
   DynamoDBClient,
   GetItemCommand,
@@ -19,10 +19,7 @@ const client = DynamoDBDocumentClient.from(
   new DynamoDBClient({ region: 'eu-west-3' })
 );
 
-export async function handler(
-  event: APIGatewayEvent,
-  context: Context
-): Promise<APIGatewayProxyResult> {
+export const handler: Handler<APIGatewayEvent> = async (event, context) => {
   console.log('Start Hello function');
   console.log(`Handler working with "${TABLE_NAME}" table.`);
   console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -52,4 +49,4 @@ export async function handler(
       message: `Hello, CDK friends! You've hit ${event.path}`,
     }),
   };
-}
+};
