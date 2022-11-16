@@ -27,7 +27,6 @@ export class ServerlessStack extends cdk.Stack {
         sourceMap: true,
         minify: true,
       },
-      // depsLockFilePath: join(__dirname, '..', '..', '..', 'yarn.lock'),
       runtime: Runtime.NODEJS_16_X,
       logRetention: RetentionDays.ONE_DAY,
       entry: join(__dirname, '..', 'lambda', 'hello.ts'),
