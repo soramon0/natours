@@ -15,6 +15,7 @@ func main() {
 
 	middleware.FiberMiddleware(app)
 	routes.TourRoutes(app)
+	routes.NotFoundRoute(app)
 
 	log.Fatalln(app.Listen(":5000"))
 }
