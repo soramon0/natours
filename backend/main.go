@@ -51,5 +51,5 @@ func main() {
 		return c.JSON(APIResponse{Error: &APIError{Message: fiber.ErrNotImplemented.Message}})
 	})
 
-	log.Fatalln(app.Listen(":3000"))
+	log.Fatalln(app.Listen(":5000"))
 }
