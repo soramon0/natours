@@ -220,5 +220,20 @@
   "imageCover": "",
   "images": null,
   "startDates": null
+ },
+ {
+  "id": 10,
+  "name": "new tour",
+  "duration": 0,
+  "maxGroupSize": 0,
+  "difficulty": "",
+  "ratingsAverage": 0,
+  "ratingsQuantity": 0,
+  "price": 0,
+  "summary": "",
+  "description": "",
+  "imageCover": "",
+  "images": null,
+  "startDates": null
  }
 ]
