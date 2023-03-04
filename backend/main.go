@@ -17,7 +17,11 @@ type Tour struct {
 type APIResponse struct {
 	Data  interface{} `json:"data"`
 	Count int         `json:"count"`
-	Error string      `json:"error"`
+	Error *APIError   `json:"error"`
+}
+
+type APIError struct {
+	Message string `json:"message"`
 }
 
 func readJsonData(filename string) *[]Tour {
@@ -44,7 +48,7 @@ func main() {
 		return c.JSON(APIResponse{Data: tours, Count: len(*tours)})
 	})
 	toursApi.Post("/", func(c *fiber.Ctx) error {
-		return c.JSON(APIResponse{Error: fiber.ErrNotImplemented.Message})
+		return c.JSON(APIResponse{Error: &APIError{Message: fiber.ErrNotImplemented.Message}})
 	})
 
 	log.Fatalln(app.Listen(":3000"))
