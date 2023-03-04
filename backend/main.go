@@ -152,5 +152,42 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(APIResponse{Data: tour, Count: 1})
 	})
 
+	toursApi.Patch("/:id", func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return &fiber.Error{Code: fiber.StatusBadRequest, Message: "Invalid Id"}
+		}
+
+		payload := Tour{}
+		if err := c.BodyParser(&payload); err != nil {
+			return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
+		}
+
+		var tours []Tour
+		if err := readJsonFile("tours-simple", &tours); err != nil {
+			return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
+		}
+
+		index := -1
+		for i, item := range tours {
+			if item.Id == id {
+				index = i
+				break
+			}
+		}
+
+		if index == -1 {
+			return &fiber.Error{Code: fiber.StatusNotFound, Message: "Tour not found"}
+		}
+
+		payload.Id = id
+		tours[index] = payload
+		if err := writeJsonFile("tours-simple", &tours); err != nil {
+			return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(APIResponse{Data: tours[index], Count: 1})
+	})
+
 	log.Fatalln(app.Listen(":5000"))
 }
