@@ -3,7 +3,9 @@
 ## Quick start
 
 - Install dependencies
-- run `air`
+  - `go mod download`
+- Run app with hot reload
+  - `air`
 
 ### Resources
 
