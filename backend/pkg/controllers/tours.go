@@ -40,7 +40,7 @@ func GetTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: "Tour not found"}
 	}
 
-	return c.JSON(models.APIResponse{Data: tour, Count: 1})
+	return c.JSON(models.APIResponse{Data: tour})
 }
 
 func CreateTour(c *fiber.Ctx) error {
@@ -67,7 +67,7 @@ func CreateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tour, Count: 1})
+	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tour})
 }
 
 func UpdateTour(c *fiber.Ctx) error {
@@ -104,5 +104,5 @@ func UpdateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tours[index], Count: 1})
+	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tours[index]})
 }

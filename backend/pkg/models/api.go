@@ -2,8 +2,8 @@ package models
 
 type APIResponse struct {
 	Data  interface{} `json:"data"`
-	Count int         `json:"count"`
-	Error *APIError   `json:"error"`
+	Count int         `json:"count,omitempty"`
+	Error *APIError   `json:"error,omitempty"`
 }
 
 type APIError struct {
