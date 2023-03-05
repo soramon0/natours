@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/soramon0/natrous/pkg/configs"
 	"github.com/soramon0/natrous/pkg/middleware"
 	"github.com/soramon0/natrous/pkg/routes"
+	"github.com/soramon0/natrous/pkg/utils"
 )
 
 func main() {
@@ -18,5 +18,5 @@ func main() {
 	routes.TourRoutes(app)
 	routes.NotFoundRoute(app)
 
-	log.Fatalln(app.Listen(":5000"))
+	utils.StartServer(app)
 }
