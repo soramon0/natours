@@ -14,6 +14,7 @@ func main() {
 	app := fiber.New(config)
 
 	middleware.FiberMiddleware(app)
+	routes.UserRoutes(app)
 	routes.TourRoutes(app)
 	routes.NotFoundRoute(app)
 
