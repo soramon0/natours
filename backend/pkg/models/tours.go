@@ -1,8 +1,8 @@
 package models
 
 type Tour struct {
-	Id              int      `json:"id"`
-	Name            string   `json:"name"`
+	Id              int      `bson:"_id,omitempty" json:"id"`
+	Name            string   `bson:"name,omitempty" json:"name,omitempty"`
 	Duration        int      `json:"duration"`
 	MaxGroupSize    int      `json:"maxGroupSize"`
 	Difficulty      string   `json:"difficulty"`

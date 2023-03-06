@@ -5,22 +5,19 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/soramon0/natrous/pkg/configs"
 	"github.com/soramon0/natrous/pkg/database"
-	"github.com/soramon0/natrous/pkg/middleware"
+	"github.com/soramon0/natrous/pkg/models"
 	"github.com/soramon0/natrous/pkg/routes"
 	"github.com/soramon0/natrous/pkg/utils"
 )
 
 func main() {
-	config := configs.FiberConfig()
-	app := fiber.New(config)
+	app := fiber.New(configs.FiberConfig())
+	client := database.OpenConnection()
+	defer database.CloseConnection(client)
 
-	database.OpenConnection()
-	defer database.CloseConnection()
+	services := models.NewServices(client)
+	logger := utils.InitLogger()
 
-	middleware.FiberMiddleware(app)
-	routes.UserRoutes(app)
-	routes.TourRoutes(app)
-	routes.NotFoundRoute(app)
-
+	routes.Register(app, services, logger)
 	utils.StartServer(app)
 }

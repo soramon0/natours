@@ -12,8 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var Client *mongo.Client
-
 func OpenConnection() *mongo.Client {
 	url := fmt.Sprintf(
 		"%s://%s:%s@%s:%s/", // eg. mongodb://user:password@mongo:27017/
@@ -39,22 +37,18 @@ func OpenConnection() *mongo.Client {
 		log.Fatalln(err)
 	}
 
-	// Save client to global client
-	Client = client
-
-	return Client
+	return client
 }
 
-func CloseConnection() {
+func CloseConnection(c *mongo.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := Client.Disconnect(ctx); err != nil {
+	if err := c.Disconnect(ctx); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func GetCollection(collectionName string) *mongo.Collection {
-	collection := Client.Database(os.Getenv("DB_NAME")).Collection(collectionName)
-	return collection
+func GetCollection(c *mongo.Client, collectionName string) *mongo.Collection {
+	return c.Database(os.Getenv("DB_NAME")).Collection(collectionName)
 }
