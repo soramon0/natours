@@ -9,13 +9,13 @@ import (
 )
 
 func registerTourRoutes(a *fiber.App, s *models.Services, l *log.Logger) *fiber.Router {
-	// Create routes group.
 	router := a.Group("/api/v1/tours")
+	toursC := controllers.NewTours(s.Tour, l)
 
-	router.Get("/", controllers.GetTours)
-	router.Get("/:id", controllers.GetTour)
-	router.Post("/", controllers.CreateTour)
-	router.Patch("/:id", controllers.UpdateTour)
+	router.Get("/", toursC.GetTours)
+	router.Get("/:id", toursC.GetTour)
+	router.Post("/", toursC.CreateTour)
+	router.Patch("/:id", toursC.UpdateTour)
 
 	return &router
 }

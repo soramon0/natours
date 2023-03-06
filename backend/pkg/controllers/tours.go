@@ -1,49 +1,45 @@
 package controllers
 
 import (
-	"strconv"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/soramon0/natrous/pkg/models"
-	"github.com/soramon0/natrous/pkg/utils"
 )
 
-func GetTours(c *fiber.Ctx) error {
-	var tours []models.Tour
-	if err := utils.ReadJsonFile("tours-simple", &tours); err != nil {
-		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
-	}
-
-	return c.JSON(models.APIResponse{Data: tours, Count: len(tours)})
+type Tours struct {
+	ts models.TourService
+	l  *log.Logger
 }
 
-func GetTour(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return &fiber.Error{Code: fiber.StatusBadRequest, Message: "Invalid Id"}
+// New Users is used to create a new Users controller.
+func NewTours(ts models.TourService, l *log.Logger) *Tours {
+	return &Tours{
+		ts: ts,
+		l:  l,
 	}
+}
 
-	var tours []models.Tour
-	if err := utils.ReadJsonFile("tours-simple", &tours); err != nil {
+func (t *Tours) GetTours(c *fiber.Ctx) error {
+	tours, err := t.ts.Find()
+	if err != nil {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	var tour *models.Tour
-	for _, item := range tours {
-		if item.Id == id {
-			tour = &item
-			break
-		}
-	}
+	return c.JSON(models.APIResponse{Data: tours, Count: len(*tours)})
+}
 
-	if tour == nil {
-		return &fiber.Error{Code: fiber.StatusNotFound, Message: "Tour not found"}
+func (t *Tours) GetTour(c *fiber.Ctx) error {
+	tour, err := t.ts.ByID(c.Params("id"))
+	if err != nil {
+		t.l.Println(err)
+		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
 	return c.JSON(models.APIResponse{Data: tour})
 }
 
-func CreateTour(c *fiber.Ctx) error {
+func (t *Tours) CreateTour(c *fiber.Ctx) error {
 	payload := struct {
 		Name string `json:"name"`
 	}{}
@@ -56,24 +52,15 @@ func CreateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: "Name is required"}
 	}
 
-	var tours []models.Tour
-	if err := utils.ReadJsonFile("tours-simple", &tours); err != nil {
-		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
-	}
-
-	tour := models.Tour{Name: payload.Name, Id: len(tours)}
-	tours = append(tours, tour)
-	if err := utils.WriteJsonFile("tours-simple", &tours); err != nil {
-		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tour})
+	tour := models.Tour{Name: payload.Name}
+	return c.JSON(models.APIResponse{Data: tour})
 }
 
-func UpdateTour(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
+func (t *Tours) UpdateTour(c *fiber.Ctx) error {
+	tour, err := t.ts.ByID(c.Params("id"))
 	if err != nil {
-		return &fiber.Error{Code: fiber.StatusBadRequest, Message: "Invalid Id"}
+		t.l.Println(err)
+		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
 	payload := models.Tour{}
@@ -81,28 +68,5 @@ func UpdateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
-	var tours []models.Tour
-	if err := utils.ReadJsonFile("tours-simple", &tours); err != nil {
-		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
-	}
-
-	index := -1
-	for i, item := range tours {
-		if item.Id == id {
-			index = i
-			break
-		}
-	}
-
-	if index == -1 {
-		return &fiber.Error{Code: fiber.StatusNotFound, Message: "Tour not found"}
-	}
-
-	payload.Id = id
-	tours[index] = payload
-	if err := utils.WriteJsonFile("tours-simple", &tours); err != nil {
-		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tours[index]})
+	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tour})
 }
