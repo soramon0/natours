@@ -2,19 +2,19 @@ package configs
 
 import (
 	"errors"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/soramon0/natrous/pkg/models"
+	"github.com/soramon0/natrous/pkg/utils"
 )
 
 // FiberConfig func for configuration Fiber app.
 // See: https://docs.gofiber.io/api/fiber#config
 func FiberConfig() fiber.Config {
 	// Define server settings.
-	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
+	readTimeoutSecondsCount, _ := strconv.Atoi(utils.GetServerReadTimeout())
 
 	// Return Fiber configuration.
 	return fiber.Config{

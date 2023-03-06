@@ -1,22 +1,15 @@
 package utils
 
 import (
-	"fmt"
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func StartServer(a *fiber.App) {
-	url := fmt.Sprintf(
-		"%s:%s",
-		os.Getenv("SERVER_HOST"),
-		os.Getenv("SERVER_PORT"),
-	)
+func StartServer(a *fiber.App, l *log.Logger) {
 
 	// Run server.
-	if err := a.Listen(url); err != nil {
-		log.Printf("Oops... Server is not running! Reason: %v\n", err)
+	if err := a.Listen(GetServerBindAddress()); err != nil {
+		l.Printf("Oops... Server is not running! Reason: %v\n", err)
 	}
 }

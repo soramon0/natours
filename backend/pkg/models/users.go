@@ -69,7 +69,7 @@ func (us *userService) ByID(id string) (*User, error) {
 }
 
 func (us *userService) Find() (*[]User, error) {
-	var users []User
+	users := make([]User, 0)
 	collection := database.GetCollection(us.client, "users")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

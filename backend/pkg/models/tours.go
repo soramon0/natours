@@ -66,7 +66,7 @@ func (ts *tourService) ByID(id string) (*Tour, error) {
 }
 
 func (ts *tourService) Find() (*[]Tour, error) {
-	var tours []Tour
+	tours := make([]Tour, 0)
 	collection := database.GetCollection(ts.client, "tours")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

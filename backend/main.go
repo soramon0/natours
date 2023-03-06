@@ -19,5 +19,5 @@ func main() {
 	logger := utils.InitLogger()
 
 	routes.Register(app, services, logger)
-	utils.StartServer(app)
+	utils.StartServer(app, logger)
 }
