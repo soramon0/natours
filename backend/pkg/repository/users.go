@@ -43,16 +43,16 @@ func GetUsers() (*[]models.User, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	results, err := collection.Find(ctx, bson.M{})
+	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("failed to retrieve users")
 	}
-	defer results.Close(ctx)
+	defer cursor.Close(ctx)
 
-	for results.Next(ctx) {
+	for cursor.Next(ctx) {
 		var singleUser models.User
-		if err = results.Decode(&singleUser); err != nil {
+		if err = cursor.Decode(&singleUser); err != nil {
 			log.Println(err)
 			return nil, fmt.Errorf("failed to retrieve users")
 		}
