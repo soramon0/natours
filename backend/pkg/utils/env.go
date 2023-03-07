@@ -51,3 +51,11 @@ func GetDatabaseName() string {
 
 	return v
 }
+
+func GetStageStatus() string {
+	v := os.Getenv("STAGE_STATUS")
+	if v == "" {
+		return "dev"
+	}
+	return v
+}
