@@ -8,20 +8,20 @@ import (
 )
 
 type Tours struct {
-	ts models.TourService
-	l  *log.Logger
+	service models.TourService
+	log     *log.Logger
 }
 
 // New Users is used to create a new Users controller.
 func NewTours(ts models.TourService, l *log.Logger) *Tours {
 	return &Tours{
-		ts: ts,
-		l:  l,
+		service: ts,
+		log:     l,
 	}
 }
 
 func (t *Tours) GetTours(c *fiber.Ctx) error {
-	tours, err := t.ts.Find()
+	tours, err := t.service.Find()
 	if err != nil {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
@@ -30,9 +30,9 @@ func (t *Tours) GetTours(c *fiber.Ctx) error {
 }
 
 func (t *Tours) GetTour(c *fiber.Ctx) error {
-	tour, err := t.ts.ByID(c.Params("id"))
+	tour, err := t.service.ByID(c.Params("id"))
 	if err != nil {
-		t.l.Println(err)
+		t.log.Println(err)
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
@@ -57,9 +57,9 @@ func (t *Tours) CreateTour(c *fiber.Ctx) error {
 }
 
 func (t *Tours) UpdateTour(c *fiber.Ctx) error {
-	tour, err := t.ts.ByID(c.Params("id"))
+	tour, err := t.service.ByID(c.Params("id"))
 	if err != nil {
-		t.l.Println(err)
+		t.log.Println(err)
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 

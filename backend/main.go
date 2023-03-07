@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
-	app := fiber.New(configs.FiberConfig())
 	client := database.OpenConnection()
 	defer database.CloseConnection(client)
 
+	app := fiber.New(configs.FiberConfig())
 	services := models.NewServices(client)
 	logger := utils.InitLogger()
 

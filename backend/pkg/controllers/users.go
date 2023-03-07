@@ -8,20 +8,20 @@ import (
 )
 
 type Users struct {
-	us models.UserService
-	l  *log.Logger
+	service models.UserService
+	log     *log.Logger
 }
 
 // New Users is used to create a new Users controller.
 func NewUsers(us models.UserService, l *log.Logger) *Users {
 	return &Users{
-		us: us,
-		l:  l,
+		service: us,
+		log:     l,
 	}
 }
 
 func (u *Users) GetUsers(c *fiber.Ctx) error {
-	users, err := u.us.Find()
+	users, err := u.service.Find()
 	if err != nil {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
@@ -30,9 +30,9 @@ func (u *Users) GetUsers(c *fiber.Ctx) error {
 }
 
 func (u *Users) GetUser(c *fiber.Ctx) error {
-	user, err := u.us.ByID(c.Params("id"))
+	user, err := u.service.ByID(c.Params("id"))
 	if err != nil {
-		u.l.Println(err)
+		u.log.Println(err)
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
@@ -40,9 +40,9 @@ func (u *Users) GetUser(c *fiber.Ctx) error {
 }
 
 func (u *Users) CreateUser(c *fiber.Ctx) error {
-	user, err := u.us.Create()
+	user, err := u.service.Create()
 	if err != nil {
-		u.l.Println(err)
+		u.log.Println(err)
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
