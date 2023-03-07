@@ -34,18 +34,20 @@ type TourService interface {
 	// ByEmail(email string) (*Tour, error)
 
 	// Methods for altering tours
-	// Create() (*Tour, error)
+	Create(tour *Tour) (*Tour, error)
 	// Update(tour *Tour) error
 	// Delete(id string) error
 }
 
 type tourService struct {
 	client *mongo.Client
+	coll   *mongo.Collection
 }
 
 func NewTourService(client *mongo.Client) TourService {
 	return &tourService{
 		client: client,
+		coll:   database.GetCollection(client, "tours"),
 	}
 }
 
@@ -55,28 +57,24 @@ func (ts *tourService) ByID(id string) (*Tour, error) {
 		return nil, fmt.Errorf("invalid tour id")
 	}
 
-	var tour *Tour
-	collection := database.GetCollection(ts.client, "tours")
-
+	var tour Tour
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err = collection.FindOne(ctx, bson.M{"id": objId}).Decode(&tour)
+	err = ts.coll.FindOne(ctx, bson.M{"_id": objId}).Decode(&tour)
 
-	return tour, err
+	return &tour, err
 }
 
 func (ts *tourService) Find() (*[]Tour, error) {
-	tours := make([]Tour, 0)
-	collection := database.GetCollection(ts.client, "tours")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	cursor, err := collection.Find(ctx, bson.M{})
+	cursor, err := ts.coll.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
+	tours := []Tour{}
 	for cursor.Next(ctx) {
 		var singleTour Tour
 		if err = cursor.Decode(&singleTour); err != nil {
@@ -87,4 +85,14 @@ func (ts *tourService) Find() (*[]Tour, error) {
 	}
 
 	return &tours, nil
+}
+
+func (ts *tourService) Create(tour *Tour) (*Tour, error) {
+	tour.Id = primitive.NewObjectID()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_, err := ts.coll.InsertOne(ctx, tour)
+
+	return tour, err
 }

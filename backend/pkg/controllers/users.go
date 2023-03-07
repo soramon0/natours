@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/soramon0/natrous/pkg/models"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Users struct {
@@ -32,6 +33,10 @@ func (u *Users) GetUsers(c *fiber.Ctx) error {
 func (u *Users) GetUser(c *fiber.Ctx) error {
 	user, err := u.service.ByID(c.Params("id"))
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &fiber.Error{Code: fiber.StatusNotFound, Message: "User not found"}
+		}
+
 		u.log.Println(err)
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}

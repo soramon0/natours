@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/soramon0/natrous/pkg/database"
@@ -36,11 +35,13 @@ type UserService interface {
 
 type userService struct {
 	client *mongo.Client
+	coll   *mongo.Collection
 }
 
 func NewUserService(client *mongo.Client) UserService {
 	return &userService{
 		client: client,
+		coll:   database.GetCollection(client, "users"),
 	}
 }
 
@@ -51,41 +52,27 @@ func (us *userService) ByID(id string) (*User, error) {
 	}
 
 	var user *User
-	collection := database.GetCollection(us.client, "users")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err = collection.FindOne(ctx, bson.M{"id": objId}).Decode(&user)
-	if err == nil {
-		return user, nil
-	}
+	err = us.coll.FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
 
-	log.Println(err)
-	if err == mongo.ErrNoDocuments {
-		return nil, fmt.Errorf("user not found")
-	}
-
-	return nil, err
+	return user, err
 }
 
 func (us *userService) Find() (*[]User, error) {
-	users := make([]User, 0)
-	collection := database.GetCollection(us.client, "users")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	cursor, err := collection.Find(ctx, bson.M{})
+	cursor, err := us.coll.Find(ctx, bson.M{})
 	if err != nil {
-		log.Println(err)
-		return nil, fmt.Errorf("failed to retrieve users")
+		return nil, err
 	}
 	defer cursor.Close(ctx)
 
+	users := []User{}
 	for cursor.Next(ctx) {
 		var singleUser User
 		if err = cursor.Decode(&singleUser); err != nil {
-			log.Println(err)
-			return nil, fmt.Errorf("failed to retrieve users")
+			return nil, err
 		}
 
 		users = append(users, singleUser)
@@ -95,20 +82,14 @@ func (us *userService) Find() (*[]User, error) {
 }
 
 func (us *userService) Create() (*User, error) {
-	collection := database.GetCollection(us.client, "users")
-	newUser := User{
+	newUser := &User{
 		Id:   primitive.NewObjectID(),
 		Name: "Sora",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	result, err := collection.InsertOne(ctx, newUser)
-	if err != nil {
-		return nil, err
-	}
+	_, err := us.coll.InsertOne(ctx, newUser)
 
-	fmt.Println(result)
-
-	return &newUser, nil
+	return newUser, err
 }
