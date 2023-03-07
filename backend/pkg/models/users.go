@@ -13,13 +13,13 @@ import (
 )
 
 type User struct {
-	Id       primitive.ObjectID `json:"id,omitempty"`
-	Name     string             `json:"name"`
-	Email    string             `json:"email"`
-	Role     string             `json:"role"`
-	Active   bool               `json:"active"`
-	Photo    string             `json:"photo"`
-	Password string             `json:"-"`
+	Id       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Name     string             `bson:"name,omitempty" json:"name,omitempty"`
+	Email    string             `bson:"email,omitempty" json:"email,omitempty"`
+	Role     string             `bson:"role,omitempty" json:"role,omitempty"`
+	Active   bool               `bson:"active,omitempty" json:"active,omitempty"`
+	Photo    string             `bson:"photo,omitempty" json:"photo,omitempty"`
+	Password string             `bson:"password,omitempty" json:"-"`
 }
 
 type UserService interface {

@@ -12,7 +12,7 @@ import (
 )
 
 type Tour struct {
-	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name            string             `bson:"name,omitempty" json:"name,omitempty"`
 	Duration        int                `bson:"duration,omitempty" json:"duration,omitempty"`
 	MaxGroupSize    int                `bson:"maxGroupSize,omitempty" json:"maxGroupSize,omitempty"`
