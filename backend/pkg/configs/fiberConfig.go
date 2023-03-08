@@ -5,9 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	"natours/pkg/models"
+	"natours/pkg/utils"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/soramon0/natrous/pkg/models"
-	"github.com/soramon0/natrous/pkg/utils"
 )
 
 // FiberConfig func for configuration Fiber app.

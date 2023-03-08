@@ -1,4 +1,4 @@
-module github.com/soramon0/natrous
+module natours
 
 go 1.20
 

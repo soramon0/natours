@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/soramon0/natrous/pkg/database"
+	"natours/pkg/database"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

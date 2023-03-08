@@ -3,8 +3,9 @@ package controllers
 import (
 	"log"
 
+	"natours/pkg/models"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/soramon0/natrous/pkg/models"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

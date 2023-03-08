@@ -1,13 +1,14 @@
 package main
 
 import (
+	"natours/pkg/configs"
+	"natours/pkg/database"
+	"natours/pkg/models"
+	"natours/pkg/routes"
+	"natours/pkg/utils"
+
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/soramon0/natrous/pkg/configs"
-	"github.com/soramon0/natrous/pkg/database"
-	"github.com/soramon0/natrous/pkg/models"
-	"github.com/soramon0/natrous/pkg/routes"
-	"github.com/soramon0/natrous/pkg/utils"
 )
 
 func main() {
