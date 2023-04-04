@@ -31,7 +31,7 @@ type Tour struct {
 type TourService interface {
 	// Methods for querying tours
 	ByID(id string) (*Tour, error)
-	Find() (*[]Tour, error)
+	Find() ([]*Tour, error)
 	// ByEmail(email string) (*Tour, error)
 
 	// Methods for altering tours
@@ -66,7 +66,7 @@ func (ts *tourService) ByID(id string) (*Tour, error) {
 	return &tour, err
 }
 
-func (ts *tourService) Find() (*[]Tour, error) {
+func (ts *tourService) Find() ([]*Tour, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	cursor, err := ts.coll.Find(ctx, bson.M{})
@@ -75,9 +75,9 @@ func (ts *tourService) Find() (*[]Tour, error) {
 	}
 	defer cursor.Close(ctx)
 
-	tours := []Tour{}
+	tours := []*Tour{}
 	for cursor.Next(ctx) {
-		var singleTour Tour
+		var singleTour *Tour
 		if err = cursor.Decode(&singleTour); err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func (ts *tourService) Find() (*[]Tour, error) {
 		tours = append(tours, singleTour)
 	}
 
-	return &tours, nil
+	return tours, nil
 }
 
 func (ts *tourService) Create(tour *Tour) (*Tour, error) {

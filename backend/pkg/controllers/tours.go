@@ -28,7 +28,7 @@ func (t *Tours) GetTours(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: tours, Count: len(*tours)})
+	return c.JSON(models.APIResponse{Data: tours, Count: len(tours)})
 }
 
 func (t *Tours) GetTour(c *fiber.Ctx) error {

@@ -25,7 +25,7 @@ type User struct {
 type UserService interface {
 	// Methods for querying users
 	ByID(id string) (*User, error)
-	Find() (*[]User, error)
+	Find() ([]*User, error)
 	// ByEmail(email string) (*User, error)
 
 	// Methods for altering users
@@ -60,7 +60,7 @@ func (us *userService) ByID(id string) (*User, error) {
 	return user, err
 }
 
-func (us *userService) Find() (*[]User, error) {
+func (us *userService) Find() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	cursor, err := us.coll.Find(ctx, bson.M{})
@@ -69,17 +69,17 @@ func (us *userService) Find() (*[]User, error) {
 	}
 	defer cursor.Close(ctx)
 
-	users := []User{}
+	users := []*User{}
+
 	for cursor.Next(ctx) {
-		var singleUser User
+		var singleUser *User
 		if err = cursor.Decode(&singleUser); err != nil {
 			return nil, err
 		}
-
 		users = append(users, singleUser)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
 func (us *userService) Create() (*User, error) {
