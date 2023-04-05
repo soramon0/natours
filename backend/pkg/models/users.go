@@ -55,7 +55,9 @@ func (us *userService) ByID(id string) (*User, error) {
 	var user *User
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err = us.coll.FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
+	if err = us.coll.FindOne(ctx, bson.M{"_id": objId}).Decode(&user); err != nil {
+		return nil, err
+	}
 
 	return user, err
 }
@@ -84,13 +86,13 @@ func (us *userService) Find() ([]*User, error) {
 
 func (us *userService) Create() (*User, error) {
 	newUser := &User{
-		Id:   primitive.NewObjectID(),
 		Name: "Sora",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_, err := us.coll.InsertOne(ctx, newUser)
-
-	return newUser, err
+	if _, err := us.coll.InsertOne(ctx, newUser); err != nil {
+		return nil, err
+	}
+	return newUser, nil
 }
