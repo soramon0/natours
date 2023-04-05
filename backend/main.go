@@ -12,13 +12,20 @@ import (
 )
 
 func main() {
-	client := database.OpenConnection()
-	defer database.CloseConnection(client)
+	logger := utils.InitLogger()
+	client := database.OpenConnection(utils.GetDatabaseBindAdress(), logger)
+	defer func() {
+		utils.Must(database.CloseConnection(client))
+	}()
 
 	app := fiber.New(configs.FiberConfig())
 	services := models.NewServices(client)
-	logger := utils.InitLogger()
 
-	routes.Register(app, services, logger)
+	vt, err := utils.NewValidator()
+	if err != nil {
+		logger.Fatalf("could not create validator %v\n", err)
+	}
+
+	routes.Register(app, services, vt, logger)
 	utils.StartServer(app, logger)
 }

@@ -28,7 +28,7 @@ func (u *Users) GetUsers(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: users, Count: len(users)})
+	return c.JSON(models.NewAPIResponse(users, len(users)))
 }
 
 func (u *Users) GetUser(c *fiber.Ctx) error {
@@ -42,7 +42,7 @@ func (u *Users) GetUser(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: user})
+	return c.JSON(models.NewAPIResponse(user, 0))
 }
 
 func (u *Users) CreateUser(c *fiber.Ctx) error {
@@ -52,5 +52,5 @@ func (u *Users) CreateUser(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: user})
+	return c.JSON(models.NewAPIResponse(user, 0))
 }

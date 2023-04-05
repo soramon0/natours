@@ -26,10 +26,7 @@ func FiberConfig() fiber.Config {
 
 func errHandler(ctx *fiber.Ctx, err error) error {
 	// Status code and message defaults to 500
-	apiError := models.APIResponse{Error: &models.APIError{
-		Message:    fiber.ErrInternalServerError.Error(),
-		StatusCode: fiber.StatusInternalServerError,
-	}}
+	apiError := models.APIResponse[any]{Error: models.NewAPIError(fiber.ErrInternalServerError.Error(), fiber.StatusInternalServerError)}
 
 	// Retrieve the custom status code if it's a *fiber.Error
 	var e *fiber.Error
@@ -40,9 +37,9 @@ func errHandler(ctx *fiber.Ctx, err error) error {
 
 	// Send custom error response
 	if err := ctx.Status(apiError.Error.StatusCode).JSON(apiError); err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{Error: &models.APIError{
-			Message: "Internal Server Error",
-		}})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.APIResponse[any]{
+			Error: models.NewAPIError("Internal Server Error", fiber.StatusInternalServerError),
+		})
 	}
 
 	// Return from handler

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"natours/pkg/models"
+	"natours/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,13 +12,15 @@ import (
 
 type Tours struct {
 	service models.TourService
+	vt      *utils.ValidatorTransaltor
 	log     *log.Logger
 }
 
 // New Users is used to create a new Users controller.
-func NewTours(ts models.TourService, l *log.Logger) *Tours {
+func NewTours(ts models.TourService, vt *utils.ValidatorTransaltor, l *log.Logger) *Tours {
 	return &Tours{
 		service: ts,
+		vt:      vt,
 		log:     l,
 	}
 }
@@ -28,7 +31,7 @@ func (t *Tours) GetTours(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusInternalServerError, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: tours, Count: len(tours)})
+	return c.JSON(models.NewAPIResponse(tours, len(tours)))
 }
 
 func (t *Tours) GetTour(c *fiber.Ctx) error {
@@ -42,7 +45,7 @@ func (t *Tours) GetTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusNotFound, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: tour})
+	return c.JSON(models.NewAPIResponse(tour, 0))
 }
 
 func (t *Tours) CreateTour(c *fiber.Ctx) error {
@@ -63,7 +66,7 @@ func (t *Tours) CreateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
-	return c.JSON(models.APIResponse{Data: tour})
+	return c.JSON(models.NewAPIResponse(tour, 0))
 }
 
 func (t *Tours) UpdateTour(c *fiber.Ctx) error {
@@ -78,5 +81,5 @@ func (t *Tours) UpdateTour(c *fiber.Ctx) error {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(models.APIResponse{Data: tour})
+	return c.Status(fiber.StatusCreated).JSON(models.NewAPIResponse(tour, 0))
 }
