@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"errors"
 	"log"
 
 	"natours/pkg/models"
 	"natours/pkg/utils"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -49,19 +51,19 @@ func (t *Tours) GetTour(c *fiber.Ctx) error {
 }
 
 func (t *Tours) CreateTour(c *fiber.Ctx) error {
-	payload := struct {
-		Name string `json:"name"`
-	}{}
-
+	var payload models.CreateTourPayload
 	if err := c.BodyParser(&payload); err != nil {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
-
-	if payload.Name == "" {
-		return &fiber.Error{Code: fiber.StatusBadRequest, Message: "Name is required"}
+	if err := t.vt.Validator.Struct(&payload); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			return c.Status(fiber.StatusBadRequest).JSON(t.vt.ValidationErrors(ve))
+		}
+		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}
 
-	tour, err := t.service.Create(&models.Tour{Name: payload.Name})
+	tour, err := t.service.Create(payload)
 	if err != nil {
 		return &fiber.Error{Code: fiber.StatusBadRequest, Message: err.Error()}
 	}

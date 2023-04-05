@@ -34,7 +34,7 @@ type TourService interface {
 	// ByEmail(email string) (*Tour, error)
 
 	// Methods for altering tours
-	Create(tour *Tour) (*Tour, error)
+	Create(payload CreateTourPayload) (*Tour, error)
 	// Update(tour *Tour) error
 	// Delete(id string) error
 }
@@ -87,8 +87,17 @@ func (ts *tourService) Find() ([]*Tour, error) {
 	return tours, nil
 }
 
-func (ts *tourService) Create(tour *Tour) (*Tour, error) {
-	tour.Id = primitive.NewObjectID()
+type CreateTourPayload struct {
+	Name  string `json:"name" validate:"required,omitempty"`
+	Price int    `json:"price" validate:"required,number,gte=1,omitempty"`
+}
+
+func (ts *tourService) Create(payload CreateTourPayload) (*Tour, error) {
+	tour := &Tour{
+		Id:    primitive.NewObjectID(),
+		Name:  payload.Name,
+		Price: payload.Price,
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
