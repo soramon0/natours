@@ -97,7 +97,6 @@ type CreateTourPayload struct {
 
 func (ts *tourService) Create(payload CreateTourPayload) (*Tour, error) {
 	tour := &Tour{
-		Id:    primitive.NewObjectID(),
 		Name:  payload.Name,
 		Price: payload.Price,
 	}
