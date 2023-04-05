@@ -61,8 +61,11 @@ func (ts *tourService) ByID(id string) (*Tour, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err = ts.coll.FindOne(ctx, bson.M{"_id": objId}).Decode(&tour)
+	if err != nil {
+		return nil, err
+	}
 
-	return &tour, err
+	return &tour, nil
 }
 
 func (ts *tourService) Find() ([]*Tour, error) {
@@ -76,12 +79,12 @@ func (ts *tourService) Find() ([]*Tour, error) {
 
 	tours := []*Tour{}
 	for cursor.Next(ctx) {
-		var singleTour *Tour
+		var singleTour Tour
 		if err = cursor.Decode(&singleTour); err != nil {
 			return nil, err
 		}
 
-		tours = append(tours, singleTour)
+		tours = append(tours, &singleTour)
 	}
 
 	return tours, nil
@@ -101,7 +104,8 @@ func (ts *tourService) Create(payload CreateTourPayload) (*Tour, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_, err := ts.coll.InsertOne(ctx, tour)
-
-	return tour, err
+	if _, err := ts.coll.InsertOne(ctx, tour); err != nil {
+		return nil, err
+	}
+	return tour, nil
 }
