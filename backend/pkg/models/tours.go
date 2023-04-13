@@ -103,8 +103,10 @@ func (ts *tourService) Create(payload CreateTourPayload) (*Tour, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if _, err := ts.coll.InsertOne(ctx, tour); err != nil {
+	result, err := ts.coll.InsertOne(ctx, tour)
+	if err != nil {
 		return nil, err
 	}
+	tour.Id = result.InsertedID.(primitive.ObjectID)
 	return tour, nil
 }
