@@ -15,23 +15,24 @@ type Tour struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name            string             `bson:"name,omitempty" json:"name,omitempty"`
 	Duration        int                `bson:"duration,omitempty" json:"duration,omitempty"`
-	MaxGroupSize    int                `bson:"maxGroupSize,omitempty" json:"maxGroupSize,omitempty"`
+	MaxGroupSize    uint               `bson:"maxGroupSize,omitempty" json:"maxGroupSize,omitempty"`
 	Difficulty      string             `bson:"difficulty,omitempty" json:"difficulty,omitempty"`
 	RatingsAverage  float64            `bson:"ratingsAverage,omitempty" json:"ratingsAverage,omitempty"`
 	RatingsQuantity int                `bson:"ratingsQuantity,omitempty" json:"ratingsQuantity,omitempty"`
-	Price           int                `bson:"price,omitempty" json:"price,omitempty"`
+	Price           uint64             `bson:"price,omitempty" json:"price,omitempty"`
+	PriceDiscount   uint64             `bson:"priceDiscount,omitempty" json:"priceDiscount,omitempty"`
 	Summary         string             `bson:"summary,omitempty" json:"summary,omitempty"`
 	Description     string             `bson:"description,omitempty" json:"description,omitempty"`
 	ImageCover      string             `bson:"imageCover,omitempty" json:"imageCover,omitempty"`
 	Images          []string           `bson:"images,omitempty" json:"images,omitempty"`
 	StartDates      []string           `bson:"startDates,omitempty" json:"startDates,omitempty"`
+	CreatedAt       time.Time          `bson:"createdAt,omitempty" json:"createdAt,omitempty"`
 }
 
 type TourService interface {
 	// Methods for querying tours
 	ByID(id string) (*Tour, error)
 	Find() ([]*Tour, error)
-	// ByEmail(email string) (*Tour, error)
 
 	// Methods for altering tours
 	Create(payload CreateTourPayload) (*Tour, error)
@@ -92,13 +93,14 @@ func (ts *tourService) Find() ([]*Tour, error) {
 
 type CreateTourPayload struct {
 	Name  string `json:"name" validate:"required,omitempty"`
-	Price int    `json:"price" validate:"required,number,gte=1,omitempty"`
+	Price uint64 `json:"price" validate:"required,number,gte=1,omitempty"`
 }
 
 func (ts *tourService) Create(payload CreateTourPayload) (*Tour, error) {
 	tour := &Tour{
-		Name:  payload.Name,
-		Price: payload.Price,
+		Name:      payload.Name,
+		Price:     payload.Price,
+		CreatedAt: time.Now(),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

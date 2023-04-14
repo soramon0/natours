@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -41,4 +42,16 @@ func GetCollection(c *mongo.Client, collectionName string) *mongo.Collection {
 		panic("DB_NAME env variable was not defined")
 	}
 	return c.Database(v).Collection(collectionName)
+}
+
+func CreateIndexes(c *mongo.Client) error {
+	toursColl := GetCollection(c, "tours")
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "name", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+	if _, err := toursColl.Indexes().CreateOne(context.TODO(), indexModel); err != nil {
+		return err
+	}
+	return nil
 }

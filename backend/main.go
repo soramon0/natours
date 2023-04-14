@@ -17,6 +17,9 @@ func main() {
 	defer func() {
 		utils.Must(database.CloseConnection(client))
 	}()
+	if err := database.CreateIndexes(client); err != nil {
+		logger.Fatalln("could not create db indexes", err)
+	}
 
 	app := fiber.New(configs.FiberConfig())
 	services := models.NewServices(client)
